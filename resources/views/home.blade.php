@@ -44,10 +44,24 @@
             margin-top: 10px; /* 與搜尋區域的間距 */
         }
 
-        /* 地圖 */
+        .content {
+            display: flex;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 20px;
+        }
+
+        .map-container {
+            flex: 4;
+        }
+
         #map {
-            height: 80vh; /* 地圖高度 */
-            margin-top: 20px; /* 與搜尋區域的間距 */
+            height: 80vh;
         }
     </style>
 </head>
@@ -63,7 +77,20 @@
     <!-- 提示訊息區域 -->
     <!-- <div id="no-results" style="display: none; color: red;">未找到符合的餐廳。</div> -->
 
+    <div class="content">
+        <div class="list-container">
+            <!-- 餐廳清單 -->
+            <ul>
+                @foreach ($restaurants as $restaurant)
+                    <li>{{ $restaurant->food_name }}</li>
+                @endforeach
+            </ul>
+        </div>
+
+        <div class="map-container">
     <div id="map"></div>
+        </div>
+    </div>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&language=zh-TW&callback=initMap" async defer></script>
     <script>
