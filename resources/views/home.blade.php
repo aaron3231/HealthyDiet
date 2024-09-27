@@ -68,9 +68,17 @@
 <body>
     <div id="info-box">
         <h2 id="search-title">餐廳搜尋</h2>
-        <form action="{{ route('home') }}" method="GET">
+        <form action="{{ route('home') }}" method="GET" style="display: flex; align-items: center;">
             <input type="text" id="search-input" name="query" placeholder="輸入餐廳名稱..." required value="{{ request('query') }}">
-            <button id="search-button">搜尋</button>
+            <button id="search-button" style="margin-left: 10px; margin-right: 10px;">搜尋</button>
+            <div>
+                <label>
+                    <input type="checkbox" name="med_food" value="N" {{ $med_food ? 'checked' : '' }}> 地中海飲食
+                </label>
+                <label>
+                    <input type="checkbox" name="diet_food" value="N" {{ $diet_food ? 'checked' : '' }}> 減脂餐
+                </label>
+            </div>
         </form>
     </div>
 
