@@ -8,14 +8,15 @@
 
 ## Run
 
+* 在 `views/home.blade.php` 填入 `API_KEY`
 * `php artisan serve`
   * 網址 `127.0.0.1:8000`
 
 ## Note
 
-* 首頁在 `resources/views/home.blade.php`
+* 前端(首頁)在 `resources/views/home.blade.php`
 * 路由 `routes/web.php`
-* `Models` 對應到資料庫的 `table`
+* `app/sModels` 對應到資料庫的 `table`
 * 新增 API 或指令在 `app/Http/Controllers`
   * 可以用指令 `php artisan make:controller {檔案名稱} --resource`
 
