@@ -206,7 +206,7 @@
         function geocodeAddress(geocoder, resultsMap, location, bounds, index) {
             geocoder.geocode({ address: location.address }, (results, status) => {
                 if (status === "OK") {
-                    const marker = new google.maps.marker.AdvancedMarkerElement({
+                    const marker = new google.maps.Marker({
                         map: resultsMap,
                         position: results[0].geometry.location,
                         title: location.name
@@ -226,12 +226,15 @@
                     markers[index] = marker;  // 將標記保存到陣列
                     infoWindows[index] = infoWindow;  // 將 infoWindow 保存到陣列
 
-                    // 在標記上添加點擊事件以顯示資訊窗口
-                    marker.addListener('click', () => {
+                    // 在標記上添加 hover 事件
+                    marker.addListener('mouseover', () => {
                         infoWindow.open(resultsMap, marker);
                     });
 
-                    // 調整地圖視口以涵蓋所有標記
+                    marker.addListener('mouseout', () => {
+                        infoWindow.close();
+                    });
+
                     resultsMap.fitBounds(bounds);
 
                     // 調整地圖視圖，向左平移 100 像素
