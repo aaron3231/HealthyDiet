@@ -86,7 +86,7 @@
             left: 10px;
             z-index: 5;
             background-color: rgba(255, 255, 255, 0.7); /* 設定為白色的半透明背景 */
-            max-height: 200px;
+            max-height: 70vh;
             overflow-y: auto;
             width: 350px;
             padding: 10px;
@@ -104,6 +104,20 @@
             font-size: 14px;
             cursor: pointer;
             color: #007bff;
+        }
+
+        /* 自定義滾動條樣式，讓滾動條更顯眼 */
+        .list-container::-webkit-scrollbar {
+            width: 8px; /* 滾動條寬度 */
+        }
+
+        .list-container::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2); /* 滾動條顏色 */
+            border-radius: 4px;
+        }
+
+        .list-container::-webkit-scrollbar-track {
+            background-color: rgba(0, 0, 0, 0.1); /* 滾動條背景 */
         }
 
         /* 地圖容器 */
