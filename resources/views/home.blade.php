@@ -165,7 +165,9 @@
             const map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 23.6432, lng: 121.0730 },
                 zoom: 7.2,
-                language: 'zh-TW'
+                language: 'zh-TW',
+                streetViewControl: false,
+                fullscreenControl: false
             });
 
             // 店家資料（從 Blade 視圖傳遞至 JavaScript）
