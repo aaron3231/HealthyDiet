@@ -157,6 +157,9 @@
 
     <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&language=zh-TW&callback=initMap" async defer></script>
     <script>
+        const markers = [];  // 用來存儲所有標記
+        const infoWindows = [];  // 用來存儲所有 infoWindow
+
         function initMap() {
             // 初始化
             const map = new google.maps.Map(document.getElementById('map'), {
@@ -176,13 +179,13 @@
             const bounds = new google.maps.LatLngBounds(); // 用來拉近拉遠標記範圍
 
             // 遍歷餐廳地址並呼叫 Geocoding API
-            locations.forEach((location) => {
-                geocodeAddress(geocoder, map, location, bounds);
+            locations.forEach((location, index) => {
+                geocodeAddress(geocoder, map, location, bounds, index);
             });
         }
 
         // 使用 Geocoding API 將地址轉換為經緯度並新增標記
-        function geocodeAddress(geocoder, resultsMap, location, bounds) {
+        function geocodeAddress(geocoder, resultsMap, location, bounds, index) {
             geocoder.geocode({ address: location.address }, (results, status) => {
                 if (status === "OK") {
                     const marker = new google.maps.Marker({
@@ -200,7 +203,10 @@
                     });
 
                     // 立即顯示資訊窗口
-                    infoWindow.open(resultsMap, marker);
+                    // infoWindow.open(resultsMap, marker);
+
+                    markers[index] = marker;  // 將標記保存到陣列
+                    infoWindows[index] = infoWindow;  // 將 infoWindow 保存到陣列
 
                     // 在標記上添加點擊事件以顯示資訊窗口
                     marker.addListener('click', () => {
@@ -217,6 +223,24 @@
                 }
             });
         }
+
+        // 添加滑鼠事件到清單項目
+        document.querySelectorAll('.list-container li').forEach((listItem, index) => {
+            // 滑鼠懸停事件
+            listItem.addEventListener('mouseover', () => {
+                infoWindows[index].open(map, markers[index]);
+            });
+
+            // 滑鼠離開事件
+            listItem.addEventListener('mouseout', () => {
+                infoWindows[index].close();
+            });
+
+            // 點擊事件
+            // listItem.addEventListener('click', () => {
+            //     infoWindows[index].open(map, markers[index]);
+            // });
+        });
     </script>
 </body>
 </html>
