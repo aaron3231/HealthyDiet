@@ -5,63 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Healthy Diet</title>
     <style>
+        /* 搜尋區塊 */
+        #info-box {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 5;
+            background-color: white;
+            padding: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            width: auto;
+        }
+
         /* 搜尋標題 */
         #search-title {
-            font-size: 24px; /* 字體大小 */
-            font-weight: bold; /* 字體粗細 */
-            margin-bottom: 10px; /* 下邊距 */
-            color: #333; /* 字體顏色 */
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
         }
 
         /* 搜尋欄位 */
         #search-input {
-            width: 300px; /* 欄位寬度 */
-            padding: 10px; /* 內邊距 */
-            border: 1px solid #ccc; /* 邊框顏色 */
-            border-radius: 4px; /* 邊框圓角 */
-            font-size: 16px; /* 字體大小 */
-            margin-right: 10px; /* 右邊距 */
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-right: 10px; /* 調整欄位與按鈕的距離 */
         }
 
         /* 按鈕 */
         #search-button {
-            padding: 10px 20px; /* 內邊距 (上下, 左右) */
-            background-color: #007bff; /* 按鈕背景顏色 */
-            color: white; /* 字體顏色 */
-            border: none; /* 移除邊框 */
-            border-radius: 4px; /* 邊框圓角 */
-            cursor: pointer; /* 鼠標指標變為手型 */
-            font-size: 16px; /* 字體大小 */
+            padding: 10px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
         /* 按鈕懸停效果 */
         #search-button:hover {
-            background-color: #0056b3; /* 懸停時的背景顏色 */
+            background-color: #357ae8;
+        }
+
+        /* 篩選條件 */
+        #checkboxes {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        #checkboxes label {
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 10px;
         }
 
         /* 提示訊息 */
         #no-results {
-            margin-top: 10px; /* 與搜尋區域的間距 */
+            margin-top: 10px;
+            color: red;
+            font-size: 14px;
         }
 
+        /* 內容排版 */
         .content {
             display: flex;
             width: 100%;
-            margin-top: 20px;
+            height: 100vh;
         }
 
         .list-container {
-            flex: 1;
+            position: absolute;
+            top: 140px;
+            left: 10px;
+            z-index: 5;
+            background-color: white;
+            max-height: 200px;
             overflow-y: auto;
-            padding-right: 20px;
+            width: 350px;
+            padding: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            border-radius: 5px;
         }
 
+        .list-container ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .list-container ul li {
+            margin-bottom: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        /* 地圖容器 */
         .map-container {
-            flex: 4;
+            flex-grow: 1;
+            height: 100%;
+            width: 100%;
         }
 
         #map {
-            height: 80vh;
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -70,8 +124,8 @@
         <h2 id="search-title">餐廳搜尋</h2>
         <form action="{{ route('home') }}" method="GET" style="display: flex; align-items: center;">
             <input type="text" id="search-input" name="query" placeholder="輸入餐廳名稱..." required value="{{ request('query') }}">
-            <button id="search-button" style="margin-left: 10px; margin-right: 10px;">搜尋</button>
-            <div>
+            <button id="search-button">搜尋</button>
+            <div id="checkboxes">
                 <label>
                     <input type="checkbox" name="med_food" value="N" {{ $med_food ? 'checked' : '' }}> 地中海飲食
                 </label>
@@ -86,14 +140,15 @@
     <!-- <div id="no-results" style="display: none; color: red;">未找到符合的餐廳。</div> -->
 
     <div class="content">
+        @if ($restaurants->isNotEmpty())
         <div class="list-container">
-            <!-- 餐廳清單 -->
             <ul>
                 @foreach ($restaurants as $restaurant)
                     <li>{{ $restaurant->food_name }}</li>
                 @endforeach
             </ul>
         </div>
+        @endif
 
         <div class="map-container">
     <div id="map"></div>
@@ -154,6 +209,9 @@
 
                     // 調整地圖視口以涵蓋所有標記
                     resultsMap.fitBounds(bounds);
+
+                    // 調整地圖視圖，向左平移 100 像素
+                    resultsMap.panBy(-100, 0);  // -100 像素向左移動，y 值為 0 表示不垂直移動
                 } else {
                     console.error("Geocode 失敗，原因: " + status);
                 }
