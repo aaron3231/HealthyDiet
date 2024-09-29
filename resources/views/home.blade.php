@@ -122,8 +122,8 @@
 <body>
     <div id="info-box">
         <h2 id="search-title">餐廳搜尋</h2>
-        <form id="search-form"  action="{{ route('home') }}" method="GET" style="display: flex; align-items: center;">
-            <input type="text" id="search-input" name="query" placeholder="輸入餐廳名稱..." required value="{{ request('query') }}">
+        <form id="search-form" action="{{ route('home') }}" method="GET" style="display: flex; align-items: center;">
+            <input type="text" id="search-input" name="query" placeholder="輸入餐廳名稱或留空以顯示所有餐廳..." value="{{ request('query') }}">
             <button id="search-button">搜尋</button>
             <div id="checkboxes">
                 <label>
@@ -161,10 +161,9 @@
         const infoWindows = [];  // 用來存儲所有 infoWindow
 
         function initMap() {
-            // 初始化
             const map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 23.6432, lng: 121.0730 },
-                zoom: 7.2,
+                zoom: 8,
                 language: 'zh-TW',
                 streetViewControl: false,
                 fullscreenControl: false,
@@ -250,11 +249,7 @@
         // 當checkbox變更時，自動提交表單
         document.querySelectorAll('#checkboxes input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
-                if (document.getElementById('search-form').checkValidity()) {
                     document.getElementById('search-form').submit();
-                } else {
-                    document.getElementById('search-input').reportValidity(); // 顯示內建的 required 提示
-                }
             });
         });
     </script>
