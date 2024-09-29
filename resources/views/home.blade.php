@@ -155,7 +155,7 @@
         </div>
     </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&language=zh-TW&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&language=zh-TW&callback=initMap&loading=async&v=weekly&libraries=marker" async defer></script>
     <script>
         const markers = [];  // 用來存儲所有標記
         const infoWindows = [];  // 用來存儲所有 infoWindow
@@ -167,7 +167,10 @@
                 zoom: 7.2,
                 language: 'zh-TW',
                 streetViewControl: false,
-                fullscreenControl: false
+                fullscreenControl: false,
+                mapTypeControl: false,
+                mapTypeId: 'roadmap',
+                mapId: "DEMO_MAP_ID", // Map ID is required for advanced markers.
             });
 
             // 店家資料（從 Blade 視圖傳遞至 JavaScript）
@@ -190,7 +193,7 @@
         function geocodeAddress(geocoder, resultsMap, location, bounds, index) {
             geocoder.geocode({ address: location.address }, (results, status) => {
                 if (status === "OK") {
-                    const marker = new google.maps.Marker({
+                    const marker = new google.maps.marker.AdvancedMarkerElement({
                         map: resultsMap,
                         position: results[0].geometry.location,
                         title: location.name
