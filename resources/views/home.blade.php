@@ -122,7 +122,7 @@
 <body>
     <div id="info-box">
         <h2 id="search-title">餐廳搜尋</h2>
-        <form action="{{ route('home') }}" method="GET" style="display: flex; align-items: center;">
+        <form id="search-form"  action="{{ route('home') }}" method="GET" style="display: flex; align-items: center;">
             <input type="text" id="search-input" name="query" placeholder="輸入餐廳名稱..." required value="{{ request('query') }}">
             <button id="search-button">搜尋</button>
             <div id="checkboxes">
@@ -240,6 +240,17 @@
             // listItem.addEventListener('click', () => {
             //     infoWindows[index].open(map, markers[index]);
             // });
+        });
+
+        // 當checkbox變更時，自動提交表單
+        document.querySelectorAll('#checkboxes input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                if (document.getElementById('search-form').checkValidity()) {
+                    document.getElementById('search-form').submit();
+                } else {
+                    document.getElementById('search-input').reportValidity(); // 顯示內建的 required 提示
+                }
+            });
         });
     </script>
 </body>
