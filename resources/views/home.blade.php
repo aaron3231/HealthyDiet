@@ -11,7 +11,7 @@
             top: 10px;
             left: 10px;
             z-index: 5;
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.7); /* 設定為白色的半透明背景 */
             padding: 10px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             border-radius: 5px;
@@ -85,7 +85,7 @@
             top: 140px;
             left: 10px;
             z-index: 5;
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.7); /* 設定為白色的半透明背景 */
             max-height: 200px;
             overflow-y: auto;
             width: 350px;
