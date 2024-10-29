@@ -78,16 +78,16 @@
         .content {
             display: flex;
             width: 100%;
-            height: 100vh;
+            height: 95vh;
         }
 
         .list-container {
             position: absolute;
-            top: 210px;
+            top: 205px;
             left: 10px;
             z-index: 5;
             background-color: rgba(255, 255, 255, 0.7); /* 設定為白色的半透明背景 */
-            max-height: 70vh;
+            max-height: 65vh;
             overflow-y: auto;
             width: 350px;
             padding: 10px;
@@ -124,7 +124,7 @@
         /* 地圖容器 */
         .map-container {
             flex-grow: 1;
-            height: 90%;
+            height: 95%;
             width: 100%;
         }
 
