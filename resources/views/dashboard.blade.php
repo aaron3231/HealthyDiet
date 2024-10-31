@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Healthy Diet</title>
     <style>
         /* 搜尋區塊 */
@@ -132,6 +133,14 @@
             width: 100%;
             height: 100%;
         }
+
+        .text-orange {
+            color: orange;
+        }
+
+        .text-gray {
+            color: gray;
+        }
     </style>
 </head>
 <body>
@@ -148,6 +157,8 @@
                     <input type="checkbox" name="diet_food" value="N" {{ $diet_food ? 'checked' : '' }}> 減脂餐
                 </label>
             </div>
+            <!-- Hidden input for user ID -->
+            <input type="hidden" name="id" value="{{ Auth::id() }}">
         </form>
     </div>
 
@@ -169,10 +180,12 @@
     <div id="map"></div>
         </div>
     </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqvU9bwZxzsHJqAl1pgdrM5HOdz_GvuKM&language=zh-TW&callback=initMap&loading=async&v=weekly&libraries=marker" async defer></script>
     <script>
         const markers = [];  // 用來存儲所有標記
         const infoWindows = [];  // 用來存儲所有 infoWindow
+        const collect_restaurants = [];
 
         function initMap() {
             const map = new google.maps.Map(document.getElementById('map'), {
@@ -200,6 +213,9 @@
 
         // 使用 Geocoding API 將地址轉換為經緯度並新增標記
         function geocodeAddress(geocoder, resultsMap, location, bounds, index) {
+            // const isBookmarked = collect_restaurants.includes(location.food_name);
+            console.log(location);
+
             geocoder.geocode({ address: location.address }, (results, status) => {
                 if (status === "OK") {
                     const marker = new google.maps.Marker({
@@ -214,23 +230,27 @@
                     // 創建資訊窗口
                     const infoWindow = new google.maps.InfoWindow({
                         content: 
-                        `<div>
-                         <h1>${location.food_name}</h1>
+                        `<div style="position: relative; padding: 10px;">
+                        <h1>${location.food_name}</h1>
                         ${location.interduce}
-
-
+                        
                         <h4>地址</h4> 
                         ${location.address}<br>
 
                         <h4>營業時間</h4>
-                             周一   ${location.Mon}
-                        <br> 周二   ${location.Tue}
-                        <br> 周三   ${location.Wed}
-                        <br> 周四   ${location.Thu}
-                        <br> 周五   ${location.Fri}
-                        <br> 周六   ${location.Sat}
-                        <br> 周日   ${location.Sun}
-                        </div>`
+                        周一   ${location.Mon}<br>
+                        周二   ${location.Tue}<br>
+                        周三   ${location.Wed}<br>
+                        周四   ${location.Thu}<br>
+                        周五   ${location.Fri}<br>
+                        周六   ${location.Sat}<br>
+                        周日   ${location.Sun}<br>
+
+                        <i id="bookmark-icon-${location.food_name}" 
+                        class="fas fa-bookmark ${location.isBookmarked ? 'text-orange' : 'text-grey'}" 
+                        style="position: absolute; top: 10px; right: 10px; cursor:pointer;" 
+                        onclick="toggleBookmark('${location.food_name}')"></i>
+                    </div>`
                     });
 
                     // 立即顯示資訊窗口
@@ -239,13 +259,9 @@
                     markers[index] = marker;  // 將標記保存到陣列
                     infoWindows[index] = infoWindow;  // 將 infoWindow 保存到陣列
 
-                    // 在標記上添加 hover 事件
-                    marker.addListener('mouseover', () => {
+                    // 在標記上添加 click 事件
+                    marker.addListener('click', () => {
                         infoWindow.open(resultsMap, marker);
-                    });
-
-                    marker.addListener('mouseout', () => {
-                        infoWindow.close();
                     });
 
                     resultsMap.fitBounds(bounds);
@@ -261,19 +277,19 @@
         // 添加滑鼠事件到清單項目
         document.querySelectorAll('.list-container li').forEach((listItem, index) => {
             // 滑鼠懸停事件
-            listItem.addEventListener('mouseover', () => {
-                infoWindows[index].open(map, markers[index]);
-            });
-
-            // 滑鼠離開事件
-            listItem.addEventListener('mouseout', () => {
-                infoWindows[index].close();
-            });
-
-            // 點擊事件
-            // listItem.addEventListener('click', () => {
+            // listItem.addEventListener('mouseover', () => {
             //     infoWindows[index].open(map, markers[index]);
             // });
+
+            // 滑鼠離開事件
+            // listItem.addEventListener('mouseout', () => {
+            //     infoWindows[index].close();
+            // });
+
+            // 點擊事件
+            listItem.addEventListener('click', () => {
+                infoWindows[index].open(map, markers[index]);
+            });
         });
 
         // 當checkbox變更時，自動提交表單
@@ -282,6 +298,37 @@
                     document.getElementById('search-form').submit();
             });
         });
+
+        function toggleBookmark(foodName) {
+            const authId = {{ Auth::id() }};
+            const url = `{{ route('set_bookmark') }}?food_name=${encodeURIComponent(foodName)}&id=${authId}`;
+            const iconElement = document.getElementById(`bookmark-icon-${foodName}`);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        console.log(response);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data.message);
+                    if (data.message === '新增收藏')
+                    {
+                        iconElement.classList.remove('text-gray');
+                        iconElement.classList.add('text-orange');
+                    }
+                    else
+                    {
+                        iconElement.classList.remove('text-orange');
+                        iconElement.classList.add('text-gray');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
     </script>
 </body>
 </html>
