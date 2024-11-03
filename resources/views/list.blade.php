@@ -129,6 +129,40 @@
         .text-gray {
             color: gray;
         }
+
+        /* dialog 視窗 */
+        #dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            width: 400px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* 關閉按鈕 */
+        #dialog-close {
+            cursor: pointer;
+            color: red;
+            float: right;
+        }
+
+        /* 上下部分分隔 */
+        #dialog-details {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        #dialog-comments {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -155,7 +189,7 @@
             <ul>
                 @foreach ($restaurants as $restaurant)
                     <li style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>{{ $restaurant->food_name }}</span>
+                        <span onclick="showDialog('{{ $restaurant->food_name }}', '{{ $restaurant }}')">{{ $restaurant->food_name }}</span>
                         <i id="bookmark-icon-{{ $restaurant->food_name }}" 
                             class="fas fa-bookmark {{ $restaurant->isBookmarked ? 'text-orange' : 'text-gray' }}" 
                             style="cursor: pointer;" 
@@ -165,6 +199,17 @@
             </ul>
         </div>
         @endif
+        <!-- Dialog -->
+        <div id="dialog">
+            <span id="dialog-close" onclick="closeDialog()">✖</span>
+            <div id="dialog-details"></div>
+            <div id="dialog-comments">
+                <h4>評論</h4>
+                <ul id="comments-list"></ul>
+                <textarea id="comment-input" placeholder="輸入您的評論"></textarea>
+                <button onclick="submitComment()">送出</button>
+            </div>
+        </div>
     </div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script>
@@ -199,11 +244,99 @@
                 });
         }
 
+        // 顯示 dialog
+        function showDialog(foodName, details) {
+            // 解析 JSON 格式的 details 字串
+            const restaurant = JSON.parse(details);
+            const introduce = restaurant.interduce;
+            const address = restaurant.address;
+            const Mon = restaurant.Mon;
+            const Tue = restaurant.Tue;
+            const Wed = restaurant.Wed;
+            const Thu = restaurant.Thu;
+            const Fri = restaurant.Fri;
+            const Sat = restaurant.Sat;
+            const Sun = restaurant.Sun;
+
+            document.getElementById('dialog-details').innerHTML = `<h1>${foodName}</h1>
+                        ${introduce}
+                        
+                        <h4>地址</h4> 
+                        ${address}<br>
+
+                        <h4>營業時間</h4>
+                        周一   ${Mon}<br>
+                        周二   ${Tue}<br>
+                        周三   ${Wed}<br>
+                        周四   ${Thu}<br>
+                        周五   ${Fri}<br>
+                        周六   ${Sat}<br>
+                        周日   ${Sun}<br>`;
+            loadComments(foodName);
+            document.getElementById('dialog').style.display = 'block';
+        }
+
+        // 關閉 dialog
+        function closeDialog() {
+            document.getElementById('dialog').style.display = 'none';
+        }
+
+        // 加載評論
+        function loadComments(foodName) {
+            fetch(`{{ route('fetch_comments') }}?restaurant_name=${encodeURIComponent(foodName)}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    const comments = data.comments;
+                    console.log(comments);
+                    const commentsContainer = document.getElementById('comments-list');
+                    commentsContainer.innerHTML = ''; // 清空現有的評論
+
+                    comments.forEach(comment => {
+                        // 只顯示所需的欄位，這裡省略了 id
+                        console.log(comment);
+                        const commentElement = document.createElement('div');
+                        commentElement.textContent = `${comment.user_name} 在 ${comment.restaurant_name} 的評論： ${comment.content}`;
+                        commentsContainer.appendChild(commentElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // 送出評論
+        function submitComment() {
+            const commentText = document.getElementById('comment-input').value;
+            if (!commentText) return alert('請輸入評論內容');
+            const authId = {{ Auth::id() }};
+            const foodName = document.getElementById('dialog-details').querySelector('strong').textContent;
+            const url = `{{ route('submit_comment') }}?restaurant_name=${foodName}&user_id=${authId}&content=${commentText}`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        console.log(response);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message);
+                    closeDialog();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('提交評論時出錯。');
+                });
+        }
+
         window.onload = function() {
             // 檢查 URL 是否已有查詢參數
             const hasQueryParams = window.location.search.length > 0;
 
             if (!hasQueryParams) {
+                document.getElementById('search-form').submit();
+            }
+
+            if (!window.location.search) {
                 document.getElementById('search-form').submit();
             }
         };

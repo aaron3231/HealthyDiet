@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/submit_comment', [CommentController::class, 'submit_comment'])->name('submit_comment');
 });
 
+Route::get('/fetch_comments', [CommentController::class, 'fetch_comments'])->name('fetch_comments');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
