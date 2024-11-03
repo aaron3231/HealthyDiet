@@ -7,19 +7,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Healthy Diet</title>
     <style>
-        /* 搜尋區塊 */
-        #info-box {
-            position: absolute;
-            top: 80px;
-            left: 10px;
-            z-index: 5;
-            background-color: rgba(255, 255, 255, 0.7); /* 設定為白色的半透明背景 */
-            padding: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            width: auto;
-        }
 
         /* 搜尋標題 */
         #search-title {
@@ -133,10 +120,9 @@
 </head>
 <body>
     <div id="info-box">
-        <h2 id="search-title">餐廳搜尋</h2>
-        <form id="search-form" action="{{ route('bookmark') }}" method="GET" style="display: flex; align-items: center;">
-            <input type="text" id="search-input" name="query" placeholder="輸入餐廳名稱或留空以顯示所有餐廳..." value="{{ request('query') }}">
-            <button id="search-button">搜尋</button>
+        <form type="hidden" id="search-form" action="{{ route('bookmark') }}" method="GET" style="display: flex; align-items: center;">
+            <input type="hidden" id="search-input" name="query" placeholder="輸入餐廳名稱或留空以顯示所有餐廳..." value="{{ request('query') }}">
+            <!-- <button type="hidden" id="search-button">搜尋</button> -->
             <!-- Hidden input for user ID -->
             <input type="hidden" name="id" value="{{ Auth::id() }}">
         </form>
@@ -147,7 +133,13 @@
         <div class="list-container">
             <ul>
                 @foreach ($bookmarkedRestaurants as $restaurant)
-                    <li>{{ $restaurant }}</li>
+                    <li style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>{{ $restaurant }}</span>
+                        <i id="bookmark-icon-{{ $restaurant }}" 
+                            class="fas fa-bookmark text-orange" 
+                            style="cursor: pointer;" 
+                            onclick="toggleBookmark('{{ $restaurant }}')"></i>
+                    </li>
                 @endforeach
             </ul>
         </div>
@@ -156,6 +148,37 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script>
+
+        function toggleBookmark(foodName) {
+            const authId = {{ Auth::id() }};
+            const url = `{{ route('set_bookmark') }}?food_name=${encodeURIComponent(foodName)}&id=${authId}`;
+            const iconElement = document.getElementById(`bookmark-icon-${foodName}`);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        console.log(response);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // console.log(data.message);
+                    if (data.message === '新增收藏')
+                    {
+                        iconElement.classList.remove('text-gray');
+                        iconElement.classList.add('text-orange');
+                    }
+                    else
+                    {
+                        iconElement.classList.remove('text-orange');
+                        iconElement.classList.add('text-gray');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
         window.onload = function() {
             // 檢查 URL 是否已有查詢參數
             const hasQueryParams = window.location.search.length > 0;

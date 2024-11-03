@@ -154,7 +154,13 @@
         <div class="list-container">
             <ul>
                 @foreach ($restaurants as $restaurant)
-                    <li>{{ $restaurant->food_name }}</li>
+                    <li style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>{{ $restaurant->food_name }}</span>
+                        <i id="bookmark-icon-{{ $restaurant->food_name }}" 
+                            class="fas fa-bookmark {{ $restaurant->isBookmarked ? 'text-orange' : 'text-gray' }}" 
+                            style="cursor: pointer;" 
+                            onclick="toggleBookmark('{{ $restaurant->food_name }}')"></i>
+                    </li>
                 @endforeach
             </ul>
         </div>
@@ -162,6 +168,36 @@
     </div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script>
+
+        function toggleBookmark(foodName) {
+            const authId = {{ Auth::id() }};
+            const url = `{{ route('set_bookmark') }}?food_name=${encodeURIComponent(foodName)}&id=${authId}`;
+            const iconElement = document.getElementById(`bookmark-icon-${foodName}`);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        console.log(response);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // console.log(data.message);
+                    if (data.message === '新增收藏')
+                    {
+                        iconElement.classList.remove('text-gray');
+                        iconElement.classList.add('text-orange');
+                    }
+                    else
+                    {
+                        iconElement.classList.remove('text-orange');
+                        iconElement.classList.add('text-gray');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
 
         window.onload = function() {
             // 檢查 URL 是否已有查詢參數
