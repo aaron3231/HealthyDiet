@@ -122,18 +122,6 @@
             background-color: rgba(0, 0, 0, 0.1); /* 滾動條背景 */
         }
 
-        /* 地圖容器 */
-        .map-container {
-            flex-grow: 1;
-            height: 95%;
-            width: 100%;
-        }
-
-        #map {
-            width: 100%;
-            height: 100%;
-        }
-
         .text-orange {
             color: orange;
         }
@@ -160,9 +148,6 @@
             <input type="hidden" name="from" value="List">
         </form>
     </div>
-
-    <!-- 提示訊息區域 -->
-    <!-- <div id="no-results" style="display: none; color: red;">未找到符合的餐廳。</div> -->
 
     <div class="content">
         @if ($restaurants->isNotEmpty())

@@ -247,6 +247,11 @@
                         class="fas fa-bookmark ${location.isBookmarked ? 'text-orange' : 'text-grey'}" 
                         style="position: absolute; top: 10px; right: 10px; cursor:pointer;" 
                         onclick="toggleBookmark('${location.food_name}')"></i>
+
+                        <button onclick="openReviewDialog('${location.food_name}')" 
+                            style="position: absolute; right: 10px; bottom: 10px; background-color: orange; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                            查看評論
+                        </button>
                     </div>`
                     });
 
@@ -273,15 +278,6 @@
 
         // 添加滑鼠事件到清單項目
         document.querySelectorAll('.list-container li').forEach((listItem, index) => {
-            // 滑鼠懸停事件
-            // listItem.addEventListener('mouseover', () => {
-            //     infoWindows[index].open(map, markers[index]);
-            // });
-
-            // 滑鼠離開事件
-            // listItem.addEventListener('mouseout', () => {
-            //     infoWindows[index].close();
-            // });
 
             // 點擊事件
             listItem.addEventListener('click', () => {
@@ -323,6 +319,57 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                });
+        }
+
+        function openReviewDialog(restaurantName) {
+            const dialogHtml = `
+                <div style="padding: 20px;">
+                    <h2>${restaurantName} 的評論</h2>
+                    <textarea id="review-text" rows="4" style="width: 100%;"></textarea><br>
+                    <button onclick="submitComment('${restaurantName}')">提交評論</button>
+                    <button onclick="closeDialog()">關閉</button>
+                </div>
+            `;
+    
+            const dialog = document.createElement('div');
+                dialog.innerHTML = dialogHtml;
+                dialog.style.position = 'fixed';
+                dialog.style.top = '50%';
+                dialog.style.left = '50%';
+                dialog.style.transform = 'translate(-50%, -50%)';
+                dialog.style.backgroundColor = 'white';
+                dialog.style.padding = '20px';
+                dialog.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
+                document.body.appendChild(dialog);
+        }
+
+        function closeDialog() {
+            const dialog = document.querySelector('div[style*="fixed"]');
+            if (dialog) {
+                document.body.removeChild(dialog);
+            }
+        }
+
+        function submitComment(restaurantName) {
+            const reviewText = document.getElementById('review-text').value;
+            const authId = {{ Auth::id() }};
+            const url = `{{ route('submit_comment') }}?restaurant_name=${restaurantName}&user_id=${authId}&content=${reviewText}`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        console.log(response);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message);
+                    closeDialog();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('提交評論時出錯。');
                 });
         }
 

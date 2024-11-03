@@ -122,18 +122,6 @@
             background-color: rgba(0, 0, 0, 0.1); /* 滾動條背景 */
         }
 
-        /* 地圖容器 */
-        .map-container {
-            flex-grow: 1;
-            height: 95%;
-            width: 100%;
-        }
-
-        #map {
-            width: 100%;
-            height: 100%;
-        }
-
         .text-orange {
             color: orange;
         }

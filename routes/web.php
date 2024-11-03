@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +24,10 @@ Route::get('/list', [SearchController::class, 'search_restaurants_from_list'])
 
 Route::middleware('auth')->group(function () {
     Route::get('/set_bookmark', [BookmarkController::class, 'set_bookmark'])->name('set_bookmark');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/submit_comment', [CommentController::class, 'submit_comment'])->name('submit_comment');
 });
 
 Route::middleware('auth')->group(function () {
