@@ -9,9 +9,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', [SearchController::class, 'search_restaurants'])
+Route::get('/dashboard', [SearchController::class, 'search_restaurants_from_hybrid'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+Route::get('/bookmark', [BookmarkController::class, 'get_Bookmarks'])
+->middleware(['auth', 'verified'])
+->name('bookmark');
+
+Route::get('/list', [SearchController::class, 'search_restaurants_from_list'])
+    ->middleware(['auth', 'verified'])
+    ->name('list');
 
 Route::middleware('auth')->group(function () {
     Route::get('/set_bookmark', [BookmarkController::class, 'set_bookmark'])->name('set_bookmark');

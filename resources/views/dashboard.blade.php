@@ -157,8 +157,7 @@
                     <input type="checkbox" name="diet_food" value="N" {{ $diet_food ? 'checked' : '' }}> 減脂餐
                 </label>
             </div>
-            <!-- Hidden input for user ID -->
-            <input type="hidden" name="id" value="{{ Auth::id() }}">
+            <input type="hidden" name="from" value="Hybrid">
         </form>
     </div>
 
@@ -177,7 +176,7 @@
         @endif
 
         <div class="map-container">
-    <div id="map"></div>
+            <div id="map"></div>
         </div>
     </div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -213,8 +212,6 @@
 
         // 使用 Geocoding API 將地址轉換為經緯度並新增標記
         function geocodeAddress(geocoder, resultsMap, location, bounds, index) {
-            // const isBookmarked = collect_restaurants.includes(location.food_name);
-            console.log(location);
 
             geocoder.geocode({ address: location.address }, (results, status) => {
                 if (status === "OK") {
@@ -312,7 +309,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log(data.message);
+                    // console.log(data.message);
                     if (data.message === '新增收藏')
                     {
                         iconElement.classList.remove('text-gray');
@@ -328,6 +325,15 @@
                     console.error('Error:', error);
                 });
         }
+
+        window.onload = function() {
+            // 檢查 URL 是否已有查詢參數
+            const hasQueryParams = window.location.search.length > 0;
+
+            if (!hasQueryParams) {
+                document.getElementById('search-form').submit();
+            }
+        };
 
     </script>
 </body>

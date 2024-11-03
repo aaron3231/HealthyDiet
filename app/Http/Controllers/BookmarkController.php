@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bookmark;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class BookmarkController extends Controller
 {
@@ -34,5 +35,17 @@ class BookmarkController extends Controller
                 return response()->json(['message' => $e->getMessage()]);
             }
         }
+    }
+
+    public function get_bookmarks(Request $request)
+    {
+        $user_id = $request->input('id');
+        Log::info('User ID:', ['user_id' => $user_id]);
+        
+        // 獲取使用者的書籤清單
+        $bookmarkedRestaurants = Bookmark::where('user_id', $user_id)->pluck('restaurant_name')->toArray();
+        Log::info('Bookmarked Restaurants:', $bookmarkedRestaurants);
+
+        return view('bookmark', compact('bookmarkedRestaurants'));
     }
 }
