@@ -10,6 +10,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/home', function () {
+    return view('home');
+})->middleware(['auth', 'verified'])->name('home');
+
 Route::get('/dashboard', [SearchController::class, 'search_restaurants_from_hybrid'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');

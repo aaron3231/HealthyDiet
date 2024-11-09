@@ -157,7 +157,6 @@
                     <input type="checkbox" name="diet_food" value="N" {{ $diet_food ? 'checked' : '' }}> 減脂餐
                 </label>
             </div>
-            <input type="hidden" name="from" value="Hybrid">
         </form>
     </div>
 
