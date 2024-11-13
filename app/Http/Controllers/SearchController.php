@@ -78,4 +78,93 @@ class SearchController extends Controller
 
         return view('list', compact('restaurants', 'med_food', 'diet_food'));
     }
+
+    public function search_restaurants_from_adv(Request $request)
+    {
+        $restaurantsQuery = Restaurant::query();
+
+        // 建立各種條件查詢
+        if ($request->has('Restaurant_Category')) {
+            $restaurantsQuery->where(function($query) use ($request) {
+                foreach ($request->input('Restaurant_Category') as $category) {
+                    $query->orWhere('Restaurant Category', $category);
+                }
+            });
+        }
+
+        if ($request->has('Town')) {
+            $restaurantsQuery->where(function($query) use ($request) {
+                foreach ($request->input('Town') as $town) {
+                    $query->orWhere('Town', $town);
+                }
+            });
+        }
+
+        if ($request->has('Delivery_Platform')) {
+            $restaurantsQuery->where(function($query) use ($request) {
+                $query->orWhere('Delivery Platform', 'Both'); // 加上 Both 條件
+                foreach ($request->input('Delivery_Platform') as $platform) {
+                    $query->orWhere('Delivery Platform', $platform);
+                }
+            });
+        }
+
+        if ($request->has('CarrierInvoice_Carrier')) {
+            $restaurantsQuery->where(function($query) use ($request) {
+                $query->orWhere('Carrier (Invoice Carrier)', 'Y');
+                foreach ($request->input('CarrierInvoice_Carrier') as $carrier) {
+                    $query->orWhere('Carrier (Invoice Carrier)', $carrier);
+                }
+            });
+        }
+
+        if ($request->has('Electronic_Payment')) {
+            $restaurantsQuery->where(function($query) use ($request) {
+                $query->orWhere('Electronic Payment', 'Y');
+                foreach ($request->input('Electronic_Payment') as $payment) {
+                    $query->orWhere('Electronic Payment', $payment);
+                }
+            });
+        }
+
+        if ($request->has('Credit_Card')) {
+            $restaurantsQuery->where(function($query) use ($request) {
+                $query->orWhere('Credit Card', 'Y');
+                foreach ($request->input('Credit_Card') as $credit) {
+                    $query->orWhere('Credit Card', $credit);
+                }
+            });
+        }
+
+        if ($request->has('Buffet_A_La_Carte')) {
+            $restaurantsQuery->where(function($query) use ($request) {
+                foreach ($request->input('Buffet_A_La_Carte') as $buffet) {
+                    $query->orWhere('Buffet/A La Carte', $buffet);
+                }
+            });
+        }
+
+        if ($request->filled('Average_Price_per_Person')) {
+            $price = $request->input('Average_Price_per_Person');
+            $restaurantsQuery->whereRaw("CAST(REGEXP_REPLACE(`Average Price per Person`, '\\\\$(\\\\d+)–(\\\\d+)', '\\\\1') AS SIGNED) <= ?", [$price])
+                            ->whereRaw("CAST(REGEXP_REPLACE(`Average Price per Person`, '\\\\$(\\\\d+)–(\\\\d+)', '\\\\2') AS SIGNED) >= ?", [$price]);
+        }
+
+        if ($request->filled('Google_Rating')) {
+            $rating = $request->input('Google_Rating');
+            $restaurantsQuery->whereRaw("CAST(Google_Rating AS DOUBLE) >= ?", [$rating]);
+        }
+
+        if ($request->filled('Number_of_Google_reviews')) {
+            $reviews = $request->input('Number_of_Google_reviews');
+            $restaurantsQuery->whereRaw("CAST(`Number of Google reviews` AS SIGNED) >= ?", [$reviews]);
+        }
+
+        // 排序和取得結果
+        // $restaurants = $restaurantsQuery->orderBy('ID')->get();
+        $restaurants = $restaurantsQuery->get();
+
+        return view('filter', compact('restaurants'));
+    }
+
 }

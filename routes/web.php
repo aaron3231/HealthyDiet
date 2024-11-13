@@ -54,9 +54,7 @@ Route::get('/shopping', function () {
     return view('shopping');
 });
 
-Route::get('/filter', function () {
-    return view('filter');
-});
+Route::get('/filter', [SearchController::class, 'search_restaurants_from_adv'])->name('restaurant.search');
 
 
 require __DIR__.'/auth.php';

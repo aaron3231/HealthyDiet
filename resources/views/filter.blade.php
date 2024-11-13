@@ -214,7 +214,7 @@
 </head>
 
 <body>
-    <form action="http://127.0.0.1/GraduationTopics/mysqli_oo.php">
+    <form action="{{ route('restaurant.search') }}">
         <div class="outer-container">
 
             <div class="container_1">
@@ -1120,8 +1120,25 @@
         <input type="submit" value="Submit">
     </form>
 
+    @if ($restaurants->isEmpty())
+        <p>No results found.</p>
+    @else
+        <table border="1" align="center">
+            <tr align="center">
+                @foreach ($restaurants->first() as $column => $value)
+                    <td>{{ $column }}</td>
+                @endforeach
+            </tr>
+            @foreach ($restaurants as $restaurant)
+                <tr>
+                    @foreach ($restaurant as $value)
+                        <td>{{ $value }}</td>
+                    @endforeach
+                </tr>
+            @endforeach
+        </table>
+    @endif
 
-    <!-- <script src="script.js"></script> Link to external JavaScript file -->
 </body>
 
 </html>
