@@ -238,7 +238,7 @@
                     </div>
                     <div class="Developer">
                         <span>組員介紹</span>
-                        <img src=".//圖片/down_rec-removebg-preview.png" alt="圖標" class="icon">
+                        <img src="{{ asset('圖片/down_rec-removebg-preview.png') }}" alt="圖標" class="icon">
                         <div class="dropdown_Developer">
                             <table>
                                 <tbody>
@@ -263,7 +263,7 @@
                     </div>
                     <div class="Publish">
                         <span>我要刊登</span>
-                        <img src=".//圖片/down_rec-removebg-preview.png" alt="圖標" class="icon">
+                        <img src="圖片/down_rec-removebg-preview.png" alt="圖標" class="icon">
                         <div class="dropdown_Publish">
                             <table>
                                 <tbody>
@@ -293,7 +293,7 @@
         <div class="container_Searching">
             <div class="title">健康美食地圖</div>
             <span class="city">台北市</span>
-            <img src=".//圖片/down_rec-removebg-preview.png" alt="圖標" class="icon">
+            <img src="圖片/down_rec-removebg-preview.png" alt="圖標" class="icon">
             <div class="dropdown_County_and_city">
                 <table>
                     <tbody>
@@ -1121,7 +1121,7 @@
     </form>
 
 
-    <script src="script.js"></script> <!-- Link to external JavaScript file -->
+    <!-- <script src="script.js"></script> Link to external JavaScript file -->
 </body>
 
 </html>

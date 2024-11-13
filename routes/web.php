@@ -54,5 +54,9 @@ Route::get('/shopping', function () {
     return view('shopping');
 });
 
+Route::get('/filter', function () {
+    return view('filter');
+});
+
 
 require __DIR__.'/auth.php';
